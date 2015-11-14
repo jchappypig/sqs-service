@@ -19,35 +19,12 @@ public class InMemoryQueueTest {
   }
 
   @Test
-  public void push_validMessageContent_shouldReturn_true() {
-    boolean result = inMemoryQueueService.push("Hello Canva", queue);
-
-    assertEquals(true, result);
-  }
-
-  @Test
-  public void push_validMessageContent_shouldAddMessageToTheQueue() {
+  public void push_messageContent_shouldAddMessageToTheQueue() {
     queue.clear();
 
     inMemoryQueueService.push("Hello Canva", queue);
 
     assertEquals(1, queue.size());
-  }
-
-  @Test
-  public void push_invalidMessageContent_shouldReturn_false() {
-    boolean result = inMemoryQueueService.push(null, queue);
-
-    assertEquals(false, result);
-  }
-
-  @Test
-  public void push_invalidMessageContent_shouldNotAddMessageToTheQueue() {
-    queue.clear();
-
-    inMemoryQueueService.push(null, queue);
-
-    assertEquals(0, queue.size());
   }
 
   @Test
@@ -115,25 +92,5 @@ public class InMemoryQueueTest {
     inMemoryQueueService.delete(messageToBeDeleted, queue);
 
     assertNotNull(inMemoryQueueService.pull(queue));
-  }
-
-  @Test
-  public void delete_shouldReturn_true_IfMessageIsFound() {
-    inMemoryQueueService.push("Hello World", queue);
-    Message messageToBeDeleted = inMemoryQueueService.pull(queue);
-
-    boolean result = inMemoryQueueService.delete(messageToBeDeleted, queue);
-
-    assertEquals(true, result);
-  }
-
-  @Test
-  public void delete_shouldReturn_false_IfMessageNotFound() {
-    inMemoryQueueService.push("Hello World", queue);
-    Message messageToBeDeleted = new Message("Hello Non exist");
-
-    boolean result = inMemoryQueueService.delete(messageToBeDeleted, queue);
-
-    assertEquals(false, result);
   }
 }

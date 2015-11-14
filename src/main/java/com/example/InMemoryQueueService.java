@@ -13,15 +13,11 @@ public class InMemoryQueueService implements QueueService {
     return null;
   }
 
-  public boolean push(String messageContent, Queue<Message> queue) {
-    if (messageContent == null) {
-      return false;
-    }
+  public void push(String messageContent, Queue<Message> queue) {
     queue.add(new Message(messageContent));
-    return true;
   }
 
-  public boolean delete(Message message, Queue<Message> queue) {
-    return queue.remove(message);
+  public void delete(Message message, Queue<Message> queue) {
+    queue.remove(message);
   }
 }

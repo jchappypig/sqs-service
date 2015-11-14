@@ -5,8 +5,8 @@ import java.util.Queue;
 public interface QueueService {
 
   Message pull(Queue<Message> queue);
-  boolean push(String messageContent, Queue<Message> queue);
-  boolean delete(Message message, Queue<Message> queue);
+  void push(String messageContent, Queue<Message> queue);
+  void delete(Message message, Queue<Message> queue);
 
   //
   // Task 1: Define me.

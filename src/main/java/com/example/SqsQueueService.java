@@ -29,13 +29,11 @@ public class SqsQueueService implements QueueService {
     return null;
   }
 
-  public boolean push(String message, Queue<Message> queue) {
+  public void push(String message, Queue<Message> queue) {
     sqs.sendMessage(new SendMessageRequest("myQueueUrl", message));
-    return false;
   }
 
-  public boolean delete(Message message, Queue<Message> queue) {
+  public void delete(Message message, Queue<Message> queue) {
     sqs.deleteMessage(new DeleteMessageRequest("myQueueUrl", "messageRecieptHandle"));
-    return false;
   }
 }

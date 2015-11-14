@@ -7,12 +7,10 @@ public class FileQueueService implements QueueService {
     return null;
   }
 
-  public boolean push(String message, Queue<Message> queue) {
-    return true;
+  public void push(String message, Queue<Message> queue) {
   }
 
-  public boolean delete(Message message, Queue<Message> queue) {
-    return false;
+  public void delete(Message message, Queue<Message> queue) {
   }
 
   //
