@@ -21,4 +21,8 @@ public class SqsQueueService implements QueueService {
   public boolean push(String message) {
     return true;
   }
+
+  public boolean delete(Message message) {
+    return false;
+  }
 }
