@@ -1,12 +1,10 @@
 package com.example;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Queue;
 
 public class InMemoryQueueService implements QueueService {
 
-  private ConcurrentLinkedQueue<Message> queue = new ConcurrentLinkedQueue<Message>();
-
-  public Message pull() {
+  public Message pull(Queue<Message> queue) {
     Message message =  queue.peek();
     if(message != null && message.isVisible()) {
       message.setTimeout(System.currentTimeMillis());
@@ -15,7 +13,7 @@ public class InMemoryQueueService implements QueueService {
     return null;
   }
 
-  public boolean push(String messageContent) {
+  public boolean push(String messageContent, Queue<Message> queue) {
     if (messageContent == null) {
       return false;
     }
@@ -23,7 +21,7 @@ public class InMemoryQueueService implements QueueService {
     return true;
   }
 
-  public boolean delete(Message message) {
+  public boolean delete(Message message, Queue<Message> queue) {
     return queue.remove(message);
   }
 }

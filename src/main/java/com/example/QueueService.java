@@ -1,10 +1,12 @@
 package com.example;
 
+import java.util.Queue;
+
 public interface QueueService {
 
-  Message pull();
-  boolean push(String messageContent);
-  boolean delete(Message message);
+  Message pull(Queue<Message> queue);
+  boolean push(String messageContent, Queue<Message> queue);
+  boolean delete(Message message, Queue<Message> queue);
 
   //
   // Task 1: Define me.

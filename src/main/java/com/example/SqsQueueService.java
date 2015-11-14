@@ -2,6 +2,8 @@ package com.example;
 
 import com.amazonaws.services.sqs.AmazonSQSClient;
 
+import java.util.Queue;
+
 public class SqsQueueService implements QueueService {
   //
   // Task 4: Optionally implement parts of me.
@@ -14,15 +16,15 @@ public class SqsQueueService implements QueueService {
   public SqsQueueService(AmazonSQSClient sqsClient) {
   }
 
-  public Message pull() {
+  public Message pull(Queue<Message> queue) {
     return null;
   }
 
-  public boolean push(String message) {
+  public boolean push(String message, Queue<Message> queue) {
     return true;
   }
 
-  public boolean delete(Message message) {
+  public boolean delete(Message message, Queue<Message> queue) {
     return false;
   }
 }
