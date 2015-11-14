@@ -2,9 +2,9 @@ package com.example;
 
 public interface QueueService {
 
-  Message pull(String queueName);
+  Object pull(String queueName);
   void push(String queueName, String messageContent);
-  void delete(String queueName, Message message);
+  void delete(String queueName, Object message);
   void createQueue(String queueName);
 
   //

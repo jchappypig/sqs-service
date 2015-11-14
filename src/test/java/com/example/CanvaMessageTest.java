@@ -4,12 +4,12 @@ import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 
-public class MessageTest {
+public class CanvaMessageTest {
 
 
   @Test
   public void isVisible_shouldReturn_true_IfOutOfVisibilityTimeOutPeriod() {
-    Message message = new Message("Hello Canva");
+    CanvaMessage message = new CanvaMessage("Hello Canva");
     message.setTimeout(System.currentTimeMillis() - 100000);
 
     boolean isVisible = message.isVisible();
@@ -19,7 +19,7 @@ public class MessageTest {
 
   @Test
   public void isVisible_shouldReturn_false_IfWithinVisibilityTimeOutPeriod() {
-    Message message = new Message("Hello Canva");
+    CanvaMessage message = new CanvaMessage("Hello Canva");
     message.setTimeout(System.currentTimeMillis() + 100000);
 
     boolean isVisible = message.isVisible();

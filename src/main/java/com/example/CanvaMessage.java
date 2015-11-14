@@ -1,12 +1,12 @@
 package com.example;
 
-public class Message {
+public class CanvaMessage {
   public static int VISIBILITY_TIMEOUT = 5000;
 
   private String content;
   private long timeout;
 
-  public Message(String content) {
+  public CanvaMessage(String content) {
     this.content = content;
   }
 

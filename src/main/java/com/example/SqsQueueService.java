@@ -1,10 +1,7 @@
 package com.example;
 
 import com.amazonaws.services.sqs.AmazonSQSClient;
-import com.amazonaws.services.sqs.model.DeleteMessageRequest;
-import com.amazonaws.services.sqs.model.GetQueueUrlResult;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.*;
 
 import java.util.List;
 
@@ -22,12 +19,11 @@ public class SqsQueueService implements QueueService {
     this.sqs = sqsClient;
   }
 
-  public Message pull(String queueName) {
+  public Object pull(String queueName) {
     GetQueueUrlResult queueUrl = sqs.getQueueUrl(queueName);
     ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(queueUrl.getQueueUrl());
     List<com.amazonaws.services.sqs.model.Message> messages = sqs.receiveMessage(receiveMessageRequest).getMessages();
-    messages.get(0).getBody();
-    return null;
+    return messages.get(0);
   }
 
   public void push(String queueName, String message) {
@@ -35,9 +31,10 @@ public class SqsQueueService implements QueueService {
     sqs.sendMessage(new SendMessageRequest(queueUrl.getQueueUrl(), message));
   }
 
-  public void delete(String queueName, Message message) {
+  public void delete(String queueName, Object message) {
     GetQueueUrlResult queueUrl = sqs.getQueueUrl(queueName);
-    sqs.deleteMessage(new DeleteMessageRequest(queueUrl.getQueueUrl(), "messageRecieptHandle"));
+    Message sqsMessage = (Message)message;
+    sqs.deleteMessage(new DeleteMessageRequest(queueUrl.getQueueUrl(), sqsMessage.getReceiptHandle()));
   }
 
   public void createQueue(String queueName) {

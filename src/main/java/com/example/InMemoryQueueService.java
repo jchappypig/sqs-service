@@ -3,11 +3,11 @@ package com.example;
 import java.util.*;
 
 public class InMemoryQueueService implements QueueService {
-  private Map<String, List<Message>> queues = new HashMap<String, List<Message>>();
+  private Map<String, List<CanvaMessage>> queues = new HashMap<String, List<CanvaMessage>>();
 
-  public Message pull(String queueName) {
-    List<Message> myQueue = queues.get(queueName);
-    Message message = myQueue.size() > 0 ? myQueue.get(0) : null;
+  public Object pull(String queueName) {
+    List<CanvaMessage> myQueue = queues.get(queueName);
+    CanvaMessage message = myQueue.size() > 0 ? myQueue.get(0) : null;
     if (message != null && message.isVisible()) {
       message.setTimeout(System.currentTimeMillis());
       return message;
@@ -16,16 +16,16 @@ public class InMemoryQueueService implements QueueService {
   }
 
   public void push(String queueName, String messageContent) {
-    List<Message> myQueue = queues.get(queueName);
-    myQueue.add(new Message(messageContent));
+    List<CanvaMessage> myQueue = queues.get(queueName);
+    myQueue.add(new CanvaMessage(messageContent));
   }
 
-  public void delete(String queueName, Message message) {
-    List<Message> myQueue = queues.get(queueName);
+  public void delete(String queueName, Object message) {
+    List<CanvaMessage> myQueue = queues.get(queueName);
     myQueue.remove(message);
   }
 
   public void createQueue(String queueName) {
-    queues.put(queueName, new LinkedList<Message>());
+    queues.put(queueName, new LinkedList<CanvaMessage>());
   }
 }
