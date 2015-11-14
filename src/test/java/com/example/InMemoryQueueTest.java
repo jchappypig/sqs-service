@@ -41,6 +41,16 @@ public class InMemoryQueueTest {
   }
 
   @Test
+  public void pull_shouldReturn_nextVisibleMessage_ifFirstMessageIsNotVisible() {
+    inMemoryQueueService.push("canvaQueue", "Hello World");
+    inMemoryQueueService.pull("canvaQueue");
+
+    CanvaMessage pulledMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
+
+    assertEquals("Hello World", pulledMessage.getContent());
+  }
+
+  @Test
   public void pull_shouldReturn_null_ifQueueIsEmpty() {
     CanvaMessage message = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
     inMemoryQueueService.delete("canvaQueue", message);

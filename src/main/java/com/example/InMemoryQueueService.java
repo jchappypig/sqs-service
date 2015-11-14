@@ -1,8 +1,12 @@
 package com.example;
 
-import com.google.common.collect.*;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.NoSuchElementException;
 
 public class InMemoryQueueService implements QueueService {
   private Multimap<String, CanvaMessage> queues;
@@ -14,12 +18,15 @@ public class InMemoryQueueService implements QueueService {
 
   public Object pull(String queueName) {
     Collection<CanvaMessage> queue = queues.get(queueName);
-    CanvaMessage message = Iterables.getFirst(queue, null);
-    if (message != null && message.isVisible()) {
+    try {
+      CanvaMessage message = Iterables.find(queue, msg -> msg.isVisible());
       message.setTimeout(System.currentTimeMillis());
+
       return message;
+
+    } catch (NoSuchElementException e) {
+      return null;
     }
-    return null;
   }
 
   public void push(String queueName, String messageContent) {
