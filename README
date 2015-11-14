@@ -49,7 +49,7 @@ how they are intended to behave.  In particular, note the following properties:
  - reliability
    When a consumer receives a message, it is not removed from the queue.
    Instead, it is temporarily suppressed (becomes "invisible").  If the consumer
-   that received the message does not subsequently delete it within within a
+   that received the message does not subsequently delete it within a
    timeout period (the "visibility timeout"), the message automatically becomes
    visible at the head of the queue again, ready to be delivered to another
    consumer.

@@ -8,10 +8,11 @@ public class InMemoryQueueService implements QueueService {
 
   public Message pull() {
     Message message =  queue.peek();
-    if(message != null) {
+    if(message != null && message.isVisible()) {
       message.setTimeout(System.currentTimeMillis());
+      return message;
     }
-    return message;
+    return null;
   }
 
   public boolean push(String messageContent) {

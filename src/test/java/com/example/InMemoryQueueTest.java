@@ -38,6 +38,25 @@ public class InMemoryQueueTest {
   }
 
   @Test
+  public void pull_shouldReturn_null_ifPushedMessageIsInvisible() {
+    inMemoryQueueService.push("Hello Canva");
+    inMemoryQueueService.pull();
+
+    Message pulledMessage = inMemoryQueueService.pull();
+    assertNull(pulledMessage);
+  }
+
+  @Test
+  public void pull_shouldReturn_ThePushedMessage_IfItBecomeVisibleAgain() {
+    inMemoryQueueService.push("Hello Canva");
+    Message message = inMemoryQueueService.pull();
+    message.setTimeout(System.currentTimeMillis() - 100000);
+
+    Message pulledMessage = inMemoryQueueService.pull();
+    assertEquals("Hello Canva", pulledMessage.getContent());
+  }
+
+  @Test
   public void pull_shouldReturn_null_ifQueueIsEmpty() {
     Message pulledMessage = inMemoryQueueService.pull();
 
@@ -51,17 +70,6 @@ public class InMemoryQueueTest {
 
     Message pulledMessage = inMemoryQueueService.pull();
     assertEquals("Hello World", pulledMessage.getContent());
-  }
-
-  @Test
-  public void pull_shouldGetBack_nextVisibleMessage() {
-    inMemoryQueueService.push("Hello World");
-    inMemoryQueueService.push("Hello Canva");
-    Message pulledMessageFirstTime = inMemoryQueueService.pull();
-
-    Message pulledMessageSecondTime = inMemoryQueueService.pull();
-
-    assertEquals("Hello World", pulledMessageSecondTime.getContent());
   }
 
   @Test
