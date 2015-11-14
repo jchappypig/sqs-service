@@ -22,7 +22,7 @@ public class SqsQueueService implements QueueService {
   public Object pull(String queueName) {
     GetQueueUrlResult queueUrl = sqs.getQueueUrl(queueName);
     ReceiveMessageRequest receiveMessageRequest = new ReceiveMessageRequest(queueUrl.getQueueUrl());
-    List<com.amazonaws.services.sqs.model.Message> messages = sqs.receiveMessage(receiveMessageRequest).getMessages();
+    List<Message> messages = sqs.receiveMessage(receiveMessageRequest).getMessages();
     return messages.get(0);
   }
 
