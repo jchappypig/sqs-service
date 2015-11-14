@@ -6,6 +6,8 @@ import org.junit.Test;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static junit.framework.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class InMemoryQueueTest {
   private InMemoryQueueService inMemoryQueueService;
@@ -24,6 +26,15 @@ public class InMemoryQueueTest {
   }
 
   @Test
+  public void push_validMessageContent_shouldAddMessageToTheQueue() {
+    queue.clear();
+
+    inMemoryQueueService.push("Hello Canva", queue);
+
+    assertEquals(1, queue.size());
+  }
+
+  @Test
   public void push_invalidMessageContent_shouldReturn_false() {
     boolean result = inMemoryQueueService.push(null, queue);
 
@@ -31,36 +42,39 @@ public class InMemoryQueueTest {
   }
 
   @Test
-  public void pull_shouldReturn_pushedMessage() {
-    inMemoryQueueService.push("Hello Canva", queue);
+  public void push_invalidMessageContent_shouldNotAddMessageToTheQueue() {
+    queue.clear();
 
-    Message pulledMessage = inMemoryQueueService.pull(queue);
+    inMemoryQueueService.push(null, queue);
 
-    assertNotNull(pulledMessage);
-    assertEquals("Hello Canva", pulledMessage.getContent());
+    assertEquals(0, queue.size());
   }
 
   @Test
-  public void pull_shouldReturn_null_ifPushedMessageIsInvisible() {
-    inMemoryQueueService.push("Hello Canva", queue);
-    inMemoryQueueService.pull(queue);
+  public void pull_shouldReturn_messageFromQueue_ifMessageFromQueueIsVisible() {
+    Message message = mock(Message.class);
+    when(message.isVisible()).thenReturn(true);
+    queue.add(message);
+
+    Message pulledMessage = inMemoryQueueService.pull(queue);
+
+    assertEquals(message, pulledMessage);
+  }
+
+  @Test
+  public void pull_shouldReturn_null_ifMessageFromQueueIsNotVisible() {
+    Message message = mock(Message.class);
+    when(message.isVisible()).thenReturn(false);
+    queue.add(message);
 
     Message pulledMessage = inMemoryQueueService.pull(queue);
     assertNull(pulledMessage);
   }
 
   @Test
-  public void pull_shouldReturn_ThePushedMessage_IfItBecomeVisibleAgain() {
-    inMemoryQueueService.push("Hello Canva", queue);
-    Message message = inMemoryQueueService.pull(queue);
-    message.setTimeout(System.currentTimeMillis() - 100000);
-
-    Message pulledMessage = inMemoryQueueService.pull(queue);
-    assertEquals("Hello Canva", pulledMessage.getContent());
-  }
-
-  @Test
   public void pull_shouldReturn_null_ifQueueIsEmpty() {
+    queue.clear();
+
     Message pulledMessage = inMemoryQueueService.pull(queue);
 
     assertNull(pulledMessage);
@@ -121,29 +135,5 @@ public class InMemoryQueueTest {
     boolean result = inMemoryQueueService.delete(messageToBeDeleted, queue);
 
     assertEquals(false, result);
-  }
-
-  @Test
-  public void isVisible_shouldReturn_true_IfOutOfVisibilityTimeOutPeriod() {
-    inMemoryQueueService.push("Hello World", queue);
-    long currentTime = System.currentTimeMillis();
-    Message message = inMemoryQueueService.pull(queue);
-    message.setTimeout(currentTime - 100000);
-
-    boolean isVisible = message.isVisible();
-
-    assertEquals(true, isVisible);
-  }
-
-  @Test
-  public void isVisible_shouldReturn_false_IfWithinVisibilityTimeOutPeriod() {
-    inMemoryQueueService.push("Hello World", queue);
-    long currentTime = System.currentTimeMillis();
-    Message message = inMemoryQueueService.pull(queue);
-    message.setTimeout(currentTime + 100000);
-
-    boolean isVisible = message.isVisible();
-
-    assertEquals(false, isVisible);
   }
 }
