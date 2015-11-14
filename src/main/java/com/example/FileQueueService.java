@@ -11,7 +11,7 @@ public class FileQueueService implements QueueService {
   public void delete(String queueName, Object message) {
   }
 
-  public void createQueue(String queueName) {
+  public void createQueue(String queueName, String messageContent) {
 
   }
 

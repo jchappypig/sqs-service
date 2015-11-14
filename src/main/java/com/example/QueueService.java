@@ -5,7 +5,7 @@ public interface QueueService {
   Object pull(String queueName);
   void push(String queueName, String messageContent);
   void delete(String queueName, Object message);
-  void createQueue(String queueName);
+  void createQueue(String queueName, String messageContent);
 
   //
   // Task 1: Define me.

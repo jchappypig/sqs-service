@@ -1,13 +1,20 @@
 package com.example;
 
+import com.google.common.collect.*;
+
 import java.util.*;
 
 public class InMemoryQueueService implements QueueService {
-  private Map<String, List<CanvaMessage>> queues = new HashMap<String, List<CanvaMessage>>();
+  private Multimap<String, CanvaMessage> queues;
+
+  public InMemoryQueueService() {
+    LinkedListMultimap<String, CanvaMessage> linkedListMultimap = LinkedListMultimap.create();
+    queues = Multimaps.synchronizedListMultimap(linkedListMultimap);
+  }
 
   public Object pull(String queueName) {
-    List<CanvaMessage> myQueue = queues.get(queueName);
-    CanvaMessage message = myQueue.size() > 0 ? myQueue.get(0) : null;
+    Collection<CanvaMessage> queue = queues.get(queueName);
+    CanvaMessage message = Iterables.getFirst(queue, null);
     if (message != null && message.isVisible()) {
       message.setTimeout(System.currentTimeMillis());
       return message;
@@ -16,16 +23,16 @@ public class InMemoryQueueService implements QueueService {
   }
 
   public void push(String queueName, String messageContent) {
-    List<CanvaMessage> myQueue = queues.get(queueName);
-    myQueue.add(new CanvaMessage(messageContent));
+    Collection<CanvaMessage> queue = queues.get(queueName);
+    queue.add(new CanvaMessage(messageContent));
   }
 
   public void delete(String queueName, Object message) {
-    List<CanvaMessage> myQueue = queues.get(queueName);
-    myQueue.remove(message);
+    Collection<CanvaMessage> queue = queues.get(queueName);
+    queue.remove(message);
   }
 
-  public void createQueue(String queueName) {
-    queues.put(queueName, new LinkedList<CanvaMessage>());
+  public void createQueue(String queueName, String messageContent) {
+    queues.put(queueName, new CanvaMessage(messageContent));
   }
 }

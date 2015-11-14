@@ -37,7 +37,7 @@ public class SqsQueueService implements QueueService {
     sqs.deleteMessage(new DeleteMessageRequest(queueUrl.getQueueUrl(), sqsMessage.getReceiptHandle()));
   }
 
-  public void createQueue(String queueName) {
+  public void createQueue(String queueName, String messageContent) {
     sqs.createQueue(queueName);
   }
 
