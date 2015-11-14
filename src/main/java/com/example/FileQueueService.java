@@ -1,16 +1,18 @@
 package com.example;
 
-import java.util.Queue;
-
 public class FileQueueService implements QueueService {
-  public Message pull(Queue<Message> queue) {
+  public Message pull(String queueName) {
     return null;
   }
 
-  public void push(String message, Queue<Message> queue) {
+  public void push(String queueName, String message) {
   }
 
-  public void delete(Message message, Queue<Message> queue) {
+  public void delete(String queueName, Message message) {
+  }
+
+  public void createQueue(String queueName) {
+
   }
 
   //

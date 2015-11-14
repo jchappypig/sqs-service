@@ -6,8 +6,6 @@ import org.junit.Test;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static junit.framework.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class InMemoryQueueTest {
   private InMemoryQueueService inMemoryQueueService;
@@ -16,81 +14,80 @@ public class InMemoryQueueTest {
   @Before
   public void setup() {
     inMemoryQueueService = new InMemoryQueueService();
-  }
-
-  @Test
-  public void push_messageContent_shouldAddMessageToTheQueue() {
-    queue.clear();
-
-    inMemoryQueueService.push("Hello Canva", queue);
-
-    assertEquals(1, queue.size());
+    inMemoryQueueService.createQueue("canvaQueue");
   }
 
   @Test
   public void pull_shouldReturn_messageFromQueue_ifMessageFromQueueIsVisible() {
-    Message message = mock(Message.class);
-    when(message.isVisible()).thenReturn(true);
-    queue.add(message);
+    inMemoryQueueService.push("canvaQueue", "Hello Canva");
 
-    Message pulledMessage = inMemoryQueueService.pull(queue);
+    Message pulledMessage = inMemoryQueueService.pull("canvaQueue");
 
-    assertEquals(message, pulledMessage);
+    assertEquals("Hello Canva", pulledMessage.getContent());
   }
 
   @Test
   public void pull_shouldReturn_null_ifMessageFromQueueIsNotVisible() {
-    Message message = mock(Message.class);
-    when(message.isVisible()).thenReturn(false);
-    queue.add(message);
+    inMemoryQueueService.push("canvaQueue", "Hello Canva");
+    inMemoryQueueService.pull("canvaQueue");
 
-    Message pulledMessage = inMemoryQueueService.pull(queue);
+    Message pulledMessage = inMemoryQueueService.pull("canvaQueue");
+
     assertNull(pulledMessage);
   }
 
   @Test
-  public void pull_shouldReturn_null_ifQueueIsEmpty() {
-    queue.clear();
+  public void pull_shouldReturn_messageFromQueue_ifMessageBecomeVisibleAgain() {
+    inMemoryQueueService.push("canvaQueue", "Hello Canva");
+    Message message = inMemoryQueueService.pull("canvaQueue");
+    message.setTimeout(System.currentTimeMillis() - 100000);
 
-    Message pulledMessage = inMemoryQueueService.pull(queue);
+    Message pulledMessage = inMemoryQueueService.pull("canvaQueue");
+
+    assertEquals("Hello Canva", pulledMessage.getContent());
+  }
+
+  @Test
+  public void pull_shouldReturn_null_ifQueueIsEmpty() {
+    Message pulledMessage = inMemoryQueueService.pull("canvaQueue");
 
     assertNull(pulledMessage);
   }
 
   @Test
   public void pull_shouldFollow_firstInFirstOut() {
-    inMemoryQueueService.push("Hello World", queue);
-    inMemoryQueueService.push("Hello Canva", queue);
+    inMemoryQueueService.push("canvaQueue", "Hello World");
+    inMemoryQueueService.push("canvaQueue", "Hello Canva");
 
-    Message pulledMessage = inMemoryQueueService.pull(queue);
+    Message pulledMessage = inMemoryQueueService.pull("canvaQueue");
     assertEquals("Hello World", pulledMessage.getContent());
   }
 
   @Test
   public void pull_shouldSet_messageVisibilityTimeout() {
-    inMemoryQueueService.push("Hello World", queue);
+    inMemoryQueueService.push("canvaQueue", "Hello World");
 
-    Message pulledMessage = inMemoryQueueService.pull(queue);
+    Message pulledMessage = inMemoryQueueService.pull("canvaQueue");
     assertTrue(pulledMessage.getTimeout() != 0);
   }
 
   @Test
   public void delete_shouldRemove_foundMessageFromQueue() {
-    inMemoryQueueService.push("Hello World", queue);
-    Message messageToBeDeleted = inMemoryQueueService.pull(queue);
+    inMemoryQueueService.push("canvaQueue", "Hello World");
+    Message messageToBeDeleted = inMemoryQueueService.pull("canvaQueue");
 
-    inMemoryQueueService.delete(messageToBeDeleted, queue);
+    inMemoryQueueService.delete("canvaQueue", messageToBeDeleted);
 
-    assertNull(inMemoryQueueService.pull(queue));
+    assertNull(inMemoryQueueService.pull("canvaQueue"));
   }
 
   @Test
   public void delete_shouldNotRemove_anyMessage_IfNotFound() {
-    inMemoryQueueService.push("Hello World", queue);
+    inMemoryQueueService.push("canvaQueue", "Hello World");
     Message messageToBeDeleted = new Message("Hello Non exist");
 
-    inMemoryQueueService.delete(messageToBeDeleted, queue);
+    inMemoryQueueService.delete("canvaQueue", messageToBeDeleted);
 
-    assertNotNull(inMemoryQueueService.pull(queue));
+    assertNotNull(inMemoryQueueService.pull("canvaQueue"));
   }
 }
