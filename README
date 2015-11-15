@@ -2,7 +2,7 @@
 
 Hi CodeReviewers,
 
-Thank you for your time. I have implementedQueueService under the following assumption:
+Thank you for your time. I have implementedQueueService under the following assumptions:
 
 1. push - push single message to the queue
 		Signature: push(String queueName, String messageContent)
@@ -13,10 +13,10 @@ Thank you for your time. I have implementedQueueService under the following assu
 3. delete - delete a message from the queue
 		Signature: delete(String queueName, Object message)
 
-3. create queue - create a queue, at the same time send a message
+4. create queue - create a queue, at the same time send a message
 		Signature: createQueue(String queueName, String messageContent);
 
-4. multiple queues are supported
+5. multiple queues are supported
 
 BTW. I have been using Ruby on rails on my current job. Please, please forgive me if I mess up something with Java. :)
 
