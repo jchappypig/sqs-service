@@ -13,10 +13,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.concurrent.*;
 
 import static com.google.common.io.Files.touch;
 
 public class FileHandler {
+  public static int TIMEOUT = 10000;
   public static final Charset CHAR_SET = StandardCharsets.UTF_8;
 
   private String prefix = null;
@@ -42,7 +44,7 @@ public class FileHandler {
   }
 
   public void appendMessage(String queueName, String messageContent) throws IOException {
-    String message =  '\n' + new CanvaMessage(messageContent).toString();
+    String message = '\n' + new CanvaMessage(messageContent).toString();
     java.nio.file.Files.write(getMessagesFile(queueName).toPath(), message.getBytes(), StandardOpenOption.APPEND);
   }
 
@@ -54,9 +56,7 @@ public class FileHandler {
   public void lock(String queueName) throws InterruptedException, IOException {
     File lock = getLockFile(queueName);
     Files.createParentDirs(lock);
-    while (!lock.mkdir()) {
-      Thread.sleep(50);
-    }
+    handleTimeout(attemptToCreateLock(lock));
   }
 
   public void unlock(String queueName) {
@@ -72,6 +72,27 @@ public class FileHandler {
   public File getMessagesFile(String queueName) {
     String pathName = Joiner.on('/').skipNulls().join(prefix, queueName, "messages");
     return new File(pathName);
+  }
+
+  private Future attemptToCreateLock(File lock) {
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    Future future = executor.submit((Callable) () -> {
+      while (!lock.mkdir()) {
+        Thread.sleep(50);
+      }
+      return null;
+    });
+
+    return future;
+  }
+
+  private void handleTimeout(Future future) {
+    try {
+      future.get(TIMEOUT, TimeUnit.MILLISECONDS);
+    } catch (Exception e) {
+      future.cancel(true);
+    }
   }
 
   private LineProcessor<List<CanvaMessage>> createMessageProcessor() {
@@ -97,7 +118,7 @@ public class FileHandler {
     // Format -  <visibility time out>:<message content>
     Iterable<String> messageInfo = Splitter.on(':').split(line);
     String content = Iterables.get(messageInfo, 1);
-    Long timeout =  Long.parseLong(Iterables.get(messageInfo, 0), 10) ;
+    Long timeout = Long.parseLong(Iterables.get(messageInfo, 0), 10);
 
     return new CanvaMessage(content, timeout);
   }

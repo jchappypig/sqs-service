@@ -169,7 +169,7 @@ public class FileQueueTest {
 
   @Test
   public void integration_flow() throws Exception {
-    FileHandler fileHandler = new FileHandler("test");
+    FileHandler fileHandler = new FileHandler("src/test");
     FileQueueService fileQueueService = new FileQueueService(fileHandler);
 
     // send three messages
