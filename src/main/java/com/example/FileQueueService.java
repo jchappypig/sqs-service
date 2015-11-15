@@ -93,8 +93,4 @@ public class FileQueueService implements QueueService {
       return null;
     }
   }
-
-  //
-  // Task 3: Implement me if you have time.
-  //
 }

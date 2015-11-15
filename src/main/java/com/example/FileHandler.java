@@ -18,6 +18,7 @@ import static com.google.common.io.Files.touch;
 
 public class FileHandler {
   public static final Charset CHAR_SET = StandardCharsets.UTF_8;
+
   private String prefix = null;
 
   public FileHandler(String prefix) {
@@ -32,6 +33,12 @@ public class FileHandler {
     File messagesFile = getMessagesFile(queueName);
     Files.createParentDirs(messagesFile);
     touch(messagesFile);
+  }
+
+  public boolean deleteQueue(String queueName) {
+    String pathName = Joiner.on('/').skipNulls().join(prefix, queueName);
+    File queueFile = new File(pathName);
+    return getMessagesFile(queueName).delete() && queueFile.delete();
   }
 
   public void appendMessage(String queueName, String messageContent) throws IOException {
@@ -67,12 +74,6 @@ public class FileHandler {
     return new File(pathName);
   }
 
-  public boolean deleteQueue(String queueName) {
-    String pathName = Joiner.on('/').skipNulls().join(prefix, queueName);
-    File queueFile = new File(pathName);
-    return getMessagesFile(queueName).delete() && queueFile.delete();
-  }
-
   private LineProcessor<List<CanvaMessage>> createMessageProcessor() {
     return new LineProcessor<List<CanvaMessage>>() {
       final List<CanvaMessage> messages = Lists.newArrayList();
@@ -93,6 +94,7 @@ public class FileHandler {
   }
 
   private CanvaMessage transformToMessage(String line) {
+    // Format -  <visibility time out>:<message content>
     Iterable<String> messageInfo = Splitter.on(':').split(line);
     String content = Iterables.get(messageInfo, 1);
     Long timeout =  Long.parseLong(Iterables.get(messageInfo, 0), 10) ;
