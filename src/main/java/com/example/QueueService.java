@@ -3,9 +3,9 @@ package com.example;
 public interface QueueService {
 
   Object pull(String queueName);
-  void push(String queueName, String messageContent);
-  void delete(String queueName, Object message);
-  void createQueue(String queueName, String messageContent);
+  boolean push(String queueName, String messageContent);
+  boolean delete(String queueName, Object message);
+  boolean createQueue(String queueName, String messageContent);
 
   //
   // Task 1: Define me.

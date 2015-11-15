@@ -18,12 +18,17 @@ import static com.google.common.io.Files.touch;
 
 public class FileHandler {
   public static final Charset CHAR_SET = StandardCharsets.UTF_8;
+  private String prefix = null;
+
+  public FileHandler(String prefix) {
+    this.prefix = prefix;
+  }
 
   public List<CanvaMessage> readAllMessages(String queueName) throws IOException {
     return Files.readLines(getMessagesFile(queueName), CHAR_SET, createMessageProcessor());
   }
 
-  public void createMessagesFile(String queueName) throws IOException {
+  public void createQueue(String queueName) throws IOException {
     File messagesFile = getMessagesFile(queueName);
     Files.createParentDirs(messagesFile);
     touch(messagesFile);
@@ -53,11 +58,19 @@ public class FileHandler {
   }
 
   public File getLockFile(String queueName) {
-    return new File(queueName + "/.lock");
+    String pathName = Joiner.on('/').skipNulls().join(prefix, queueName, ".lock");
+    return new File(pathName);
   }
 
   public File getMessagesFile(String queueName) {
-    return new File(queueName + "/messages");
+    String pathName = Joiner.on('/').skipNulls().join(prefix, queueName, "messages");
+    return new File(pathName);
+  }
+
+  public boolean deleteQueue(String queueName) {
+    String pathName = Joiner.on('/').skipNulls().join(prefix, queueName);
+    File queueFile = new File(pathName);
+    return getMessagesFile(queueName).delete() && queueFile.delete();
   }
 
   private LineProcessor<List<CanvaMessage>> createMessageProcessor() {

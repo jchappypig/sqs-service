@@ -3,7 +3,7 @@ package com.example;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 
 public class InMemoryQueueTest {
   private InMemoryQueueService inMemoryQueueService;
@@ -16,18 +16,18 @@ public class InMemoryQueueTest {
 
   @Test
   public void pull_shouldReturn_messageFromQueue_ifMessageFromQueueIsVisible() {
-    CanvaMessage pulledMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
+    CanvaMessage receivedMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
 
-    assertEquals("Hello Canva", pulledMessage.getContent());
+    assertEquals("Hello Canva", receivedMessage.getContent());
   }
 
   @Test
   public void pull_shouldReturn_null_ifMessageFromQueueIsNotVisible() {
     inMemoryQueueService.pull("canvaQueue");
 
-    CanvaMessage pulledMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
+    CanvaMessage receivedMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
 
-    assertNull(pulledMessage);
+    assertNull(receivedMessage);
   }
 
   @Test
@@ -35,9 +35,9 @@ public class InMemoryQueueTest {
     CanvaMessage message = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
     message.setTimeout(System.currentTimeMillis() - 100000);
 
-    CanvaMessage pulledMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
+    CanvaMessage receivedMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
 
-    assertEquals("Hello Canva", pulledMessage.getContent());
+    assertEquals("Hello Canva", receivedMessage.getContent());
   }
 
   @Test
@@ -45,32 +45,32 @@ public class InMemoryQueueTest {
     inMemoryQueueService.push("canvaQueue", "Hello World");
     inMemoryQueueService.pull("canvaQueue");
 
-    CanvaMessage pulledMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
+    CanvaMessage receivedMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
 
-    assertEquals("Hello World", pulledMessage.getContent());
+    assertEquals("Hello World", receivedMessage.getContent());
   }
 
   @Test
   public void pull_shouldReturn_null_ifQueueIsEmpty() {
     CanvaMessage message = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
     inMemoryQueueService.delete("canvaQueue", message);
-    CanvaMessage pulledMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
+    CanvaMessage receivedMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
 
-    assertNull(pulledMessage);
+    assertNull(receivedMessage);
   }
 
   @Test
   public void pull_shouldFollow_firstInFirstOut() {
     inMemoryQueueService.push("canvaQueue", "Hello World");
 
-    CanvaMessage pulledMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
-    assertEquals("Hello Canva", pulledMessage.getContent());
+    CanvaMessage receivedMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
+    assertEquals("Hello Canva", receivedMessage.getContent());
   }
 
   @Test
   public void pull_shouldSet_messageVisibilityTimeout() {
-    CanvaMessage pulledMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
-    assertTrue(pulledMessage.getTimeout() != 0);
+    CanvaMessage receivedMessage = (CanvaMessage) inMemoryQueueService.pull("canvaQueue");
+    assertTrue(receivedMessage.getTimeout() != 0);
   }
 
   @Test

@@ -18,8 +18,26 @@ public class InMemoryQueueService implements QueueService {
 
   public Object pull(String queueName) {
     Collection<CanvaMessage> queue = queues.get(queueName);
+    return findFirstVisibleMessage(queue);
+  }
+
+  public boolean push(String queueName, String messageContent) {
+    Collection<CanvaMessage> queue = queues.get(queueName);
+    return queue.add(new CanvaMessage(messageContent));
+  }
+
+  public boolean delete(String queueName, Object message) {
+    Collection<CanvaMessage> queue = queues.get(queueName);
+    return queue.remove(message);
+  }
+
+  public boolean createQueue(String queueName, String messageContent) {
+    return queues.put(queueName, new CanvaMessage(messageContent));
+  }
+
+  private CanvaMessage findFirstVisibleMessage(Collection<CanvaMessage> messages) {
     try {
-      CanvaMessage message = Iterables.find(queue, msg -> msg.isVisible());
+      CanvaMessage message = Iterables.find(messages, msg -> msg.isVisible());
       message.setTimeout(System.currentTimeMillis());
 
       return message;
@@ -27,19 +45,5 @@ public class InMemoryQueueService implements QueueService {
     } catch (NoSuchElementException e) {
       return null;
     }
-  }
-
-  public void push(String queueName, String messageContent) {
-    Collection<CanvaMessage> queue = queues.get(queueName);
-    queue.add(new CanvaMessage(messageContent));
-  }
-
-  public void delete(String queueName, Object message) {
-    Collection<CanvaMessage> queue = queues.get(queueName);
-    queue.remove(message);
-  }
-
-  public void createQueue(String queueName, String messageContent) {
-    queues.put(queueName, new CanvaMessage(messageContent));
   }
 }

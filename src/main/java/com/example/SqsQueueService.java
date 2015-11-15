@@ -26,19 +26,20 @@ public class SqsQueueService implements QueueService {
     return messages.get(0);
   }
 
-  public void push(String queueName, String message) {
+  public boolean push(String queueName, String message) {
     GetQueueUrlResult queueUrl = sqs.getQueueUrl(queueName);
-    sqs.sendMessage(new SendMessageRequest(queueUrl.getQueueUrl(), message));
+    return sqs.sendMessage(new SendMessageRequest(queueUrl.getQueueUrl(), message)).getMessageId() != null;
   }
 
-  public void delete(String queueName, Object message) {
+  public boolean delete(String queueName, Object message) {
     GetQueueUrlResult queueUrl = sqs.getQueueUrl(queueName);
     Message sqsMessage = (Message)message;
     sqs.deleteMessage(new DeleteMessageRequest(queueUrl.getQueueUrl(), sqsMessage.getReceiptHandle()));
+    return true;
   }
 
-  public void createQueue(String queueName, String messageContent) {
-    sqs.createQueue(queueName);
+  public boolean createQueue(String queueName, String messageContent) {
+    return sqs.createQueue(queueName).getQueueUrl() != null;
   }
 
 }
