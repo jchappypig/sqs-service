@@ -26,4 +26,11 @@ public class CanvaMessageTest {
 
     assertEquals(false, isVisible);
   }
+
+  @Test
+  public void toString_shouldReturn_visibilityTimeOutAndMessageContent() {
+    CanvaMessage message = new CanvaMessage("Hello Canva");
+
+    assertEquals("0:Hello Canva", message.toString());
+  }
 }
