@@ -1,3 +1,30 @@
+Hi CodeReviewers,
+
+Thank you for your time. I have implementedQueueService under the following assumption:
+
+1. push - push single message to the queue
+		Signature: push(String queueName, String messageContent)
+
+2. pull - pull the first visible (out of visibility timeout) message form the queue
+		Signature: pull(String queueName)
+
+3. delete - delete a message from the queue
+		Signature: delete(String queueName, Object message)
+
+3. create queue - create a queue, at the same time send a message
+		Signature: createQueue(String queueName, String messageContent);
+
+4. multiple queues are supported
+
+BTW. I have been using Ruby on rails on my current job. Please, please forgive me if I mess up something with Java. :)
+
+Any feedback is welcome! jchappypig@hotmail.com
+
+Cheers,
+Huanhuan Huang
+
+
+
 Message Queues
 --------------
 Your task is to design and implement a message queue.
